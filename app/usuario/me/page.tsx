@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import HeaderCard from "../../_components/HeaderCard";
 import ActionCard from "../../_components/ActionCard";
@@ -34,6 +34,7 @@ export default function MeuPerfilPage() {
     const [editandoOrganizador, setEditandoOrganizador] = useState(false);
     const [salvandoConta, setSalvandoConta] = useState(false);
     const [salvandoOrganizador, setSalvandoOrganizador] = useState(false);
+    const [verificandoAcesso, setVerificandoAcesso] = useState(true);
     const [formConta, setFormConta] = useState({
         nome: "",
         email: "",
@@ -43,7 +44,16 @@ export default function MeuPerfilPage() {
         biografia: "",
     });
 
-    const carregarPerfil = async () => {
+    useEffect(() => {
+        async function verificarAcesso() {
+            await atualizarUsuario();
+            setVerificandoAcesso(false);
+        }
+
+        void verificarAcesso();
+    }, [atualizarUsuario]);
+
+    const carregarPerfil = useCallback(async () => {
         if (!autenticado) {
             setCarregandoPerfil(false);
             return;
@@ -88,19 +98,19 @@ export default function MeuPerfilPage() {
         }
 
         setCarregandoPerfil(false);
-    };
+    }, [autenticado, organizador, router, showToast]);
 
     useEffect(() => {
-        if (!loading && !autenticado) {
+        if (!verificandoAcesso && !loading && !autenticado) {
             router.push("/login");
         }
-    }, [autenticado, loading, router]);
+    }, [autenticado, loading, router, verificandoAcesso]);
 
     useEffect(() => {
-        if (!loading) {
-            carregarPerfil();
+        if (!verificandoAcesso && !loading) {
+            void Promise.resolve().then(carregarPerfil);
         }
-    }, [autenticado, loading, organizador, router, showToast]);
+    }, [carregarPerfil, loading, verificandoAcesso]);
 
     const handleContaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -186,7 +196,7 @@ export default function MeuPerfilPage() {
         showToast("Dados de organizador atualizados com sucesso.", "success");
     };
 
-    if (loading || carregandoPerfil) {
+    if (verificandoAcesso || loading || carregandoPerfil) {
         return (
             <div className="mx-auto flex w-full max-w-4xl justify-center py-12">
                 <span className="text-sm text-slate-500">Carregando perfil...</span>

@@ -217,7 +217,7 @@ export default function SecaoAvaliacoes({
                                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                                     <div>
                                         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                            Sua avaliacao
+                                            Sua avaliação
                                         </p>
                                         <p className="mt-2 text-sm leading-6 text-slate-600">
                                             Você já avaliou este evento. Se quiser, pode atualizar ou remover seu comentário.

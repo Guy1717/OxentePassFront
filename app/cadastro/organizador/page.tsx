@@ -11,6 +11,7 @@ export default function CadastroOrganizadorPage() {
   const router = useRouter();
   const { showToast } = useToast();
   const { usuario, autenticado, loading, atualizarUsuario } = useAuth();
+  const [verificandoAcesso, setVerificandoAcesso] = useState(true);
   const [formData, setFormData] = useState({
     cnpj: "",
     telefone: "",
@@ -18,10 +19,19 @@ export default function CadastroOrganizadorPage() {
   });
 
   useEffect(() => {
-    if (!loading && !autenticado) {
+    async function verificarAcesso() {
+      await atualizarUsuario();
+      setVerificandoAcesso(false);
+    }
+
+    void verificarAcesso();
+  }, [atualizarUsuario]);
+
+  useEffect(() => {
+    if (!verificandoAcesso && !loading && !autenticado) {
       router.push("/login");
     }
-  }, [autenticado, loading, router]);
+  }, [autenticado, loading, router, verificandoAcesso]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -60,7 +70,7 @@ export default function CadastroOrganizadorPage() {
     router.refresh();
   }
 
-  if (loading) {
+  if (verificandoAcesso || loading) {
     return (
       <div className="mx-auto flex w-full max-w-2xl justify-center py-12">
         <span className="text-sm text-slate-500">Carregando...</span>

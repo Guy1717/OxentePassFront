@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { buscarUsuarioAutenticado, logoutUsuario } from "../../../backend/chamadasAuth";
 
 type UsuarioAutenticado = {
@@ -24,9 +24,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [usuario, setUsuario] = useState<UsuarioAutenticado | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    const atualizarUsuario = async () => {
+    const atualizarUsuario = useCallback(async () => {
         setLoading(true);
 
         try {
@@ -39,15 +39,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const logout = async () => {
+    const logout = useCallback(async () => {
         await logoutUsuario();
         setUsuario(null);
-    };
-
-    useEffect(() => {
-        atualizarUsuario();
     }, []);
 
     return (
