@@ -9,17 +9,19 @@ type LinkProps = {
     id: number,
     title: string,
     href: string
+    authPrivate?: boolean
 }
 
 export default function Navbar() {
     const router = useRouter();
-    const { autenticado, loading, logout, usuario } = useAuth();
+    const { autenticado, loading, logout, usuario, organizador } = useAuth();
 
     // Links da Navbar (o OxentePass é estático)
     const links = [
-        { id: 1, title: "Cidades", href: "/cidade" },
-        { id: 2, title: "Categorias", href: "/categoria" },
-        { id: 3, title: "Organização", href: "/organizador" },
+        { id: 1, title: "Eventos", href: "/" },
+        { id: 2, title: "Cidades", href: "/cidade" },
+        { id: 3, title: "Categorias", href: "/categoria" },
+        { id: 4, title: "Organização", href: "/organizador", authPrivate: true },
     ]
 
     const handleLogout = async () => {
@@ -52,11 +54,15 @@ export default function Navbar() {
                 {
                     links.map(
                         (link: LinkProps) => (
-                            <li key={link.id}>
-                                <Link className="text-lg cursor-pointer" href={link.href} >
-                                    {link.title}
-                                </Link>
-                            </li>
+                            link.authPrivate && !organizador ?
+
+                                <></> :
+
+                                <li key={link.id} >
+                                    <Link className="text-lg cursor-pointer" href={link.href} >
+                                        {link.title}
+                                    </Link>
+                                </li>
                         )
                     )
                 }
